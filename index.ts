@@ -204,3 +204,25 @@ class BiLineMover {
         this.curr.startUpdating(cb)
     }
 }
+
+class Renderer {
+
+    blm : BiLineMover = new BiLineMover()
+    animator : Animator = new Animator()
+
+    render(context : CanvasRenderingContext2D) {
+        this.blm.draw(context)
+    }
+
+    handleTap(cb : Function) {
+        this.blm.startUpdating(() => {
+            this.animator.start(() => {
+                cb()
+                this.blm.update(() => {
+                    this.animator.stop()
+                    cb()
+                })
+            })
+        })
+    }
+}
