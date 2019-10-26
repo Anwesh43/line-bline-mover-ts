@@ -18,8 +18,8 @@ class ScaleUtil {
         return Math.min(1 / n, ScaleUtil.maxScale(scale, i, n)) * n
     }
 
-    static sinify(scale : number) : number {
-        return Math.sin(scale * Math.PI)
+    static sinify(scale : number, n : number) : number {
+        return Math.sin(scale * Math.PI / n)
     }
 }
 
@@ -33,17 +33,17 @@ class DrawingUtil {
     }
 
     static drawLineMover(context : CanvasRenderingContext2D, scale : number, size : number) {
-        const x : number = size * ScaleUtil.divideScale(scale, 1, 2)
-        const sf : number = ScaleUtil.sinify(scale)
+        const x : number = size * (1 - ScaleUtil.divideScale(scale, 1, 2))
+        const sf : number = ScaleUtil.sinify(scale, 1)
         DrawingUtil.drawLine(context, 0, size, size * sf, size)
-        DrawingUtil.drawLine(context, x, 0, x, -2 * size)
+        DrawingUtil.drawLine(context, x, size, x, -size)
     }
 
     static drawBiLineMover(context : CanvasRenderingContext2D, scale : number, size : number) {
         for (var i = 0; i < 2; i++) {
             context.save()
             context.scale(1 - 2 * i, 1)
-            DrawingUtil.drawBiLineMover(context, scale, size)
+            DrawingUtil.drawLineMover(context, scale, size)
             context.restore()
         }
     }
@@ -75,7 +75,7 @@ class Stage {
     }
 
     render() {
-        this.context.fillStyle = foreColor
+        this.context.fillStyle = backColor
         this.context.fillRect(0, 0, w, h)
         this.renderer.render(this.context)
     }
