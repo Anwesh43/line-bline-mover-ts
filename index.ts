@@ -6,6 +6,7 @@ const strokeFactor : number = 90
 const sizeFactor : number = 2.9
 const foreColor : string = "#4CAF50"
 const backColor : string = "#BDBDBD"
+const nodes : number = 5
 
 class ScaleUtil {
 
@@ -19,6 +20,44 @@ class ScaleUtil {
 
     static sinify(scale : number) : number {
         return Math.sin(scale * Math.PI)
+    }
+}
+
+class DrawingUtil {
+
+    static drawLine(context : CanvasRenderingContext2D, x1 : number, y1 : number, x2 : number, y2 : number) {
+        context.beginPath()
+        context.moveTo(x1, y1)
+        context.lineTo(x2, y2)
+        context.stroke()
+    }
+
+    static drawLineMover(context : CanvasRenderingContext2D, scale : number, size : number) {
+        const x : number = size * ScaleUtil.divideScale(scale, 1, 2)
+        const sf : number = ScaleUtil.sinify(scale)
+        DrawingUtil.drawLine(context, 0, size, size * sf, size)
+        DrawingUtil.drawLine(context, x, 0, x, -2 * size)
+    }
+
+    static drawBiLineMover(context : CanvasRenderingContext2D, scale : number, size : number) {
+        for (var i = 0; i < 2; i++) {
+            context.save()
+            context.scale(1 - 2 * i, 1)
+            DrawingUtil.drawBiLineMover(context, scale, size)
+            context.restore()
+        }
+    }
+
+    static drawBLMNode(context : CanvasRenderingContext2D, i : number, scale : number) {
+        const gap : number = w / (nodes + 1)
+        const size : number = gap / sizeFactor
+        context.lineCap = 'round'
+        context.lineWidth = Math.min(w, h) / strokeFactor
+        context.strokeStyle = foreColor
+        context.save()
+        context.translate(gap * (i + 1), h / 2)
+        DrawingUtil.drawBiLineMover(context, scale, size)
+        context.restore()
     }
 }
 
